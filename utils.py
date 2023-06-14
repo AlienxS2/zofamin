@@ -225,7 +225,7 @@ def start_training(app):
 
         question_label = tk.Label(question_window, text="Вопрос:")
         question_label.pack()
-        question_entry = tk.Text(question_window, height=5)
+        question_entry = tk.Text(question_window, height=20)
         question_entry.insert(tk.END, question["question"])
         question_entry.pack()
 
@@ -240,7 +240,7 @@ def start_training(app):
 
             answer_label = tk.Label(answer_window, text="Ответ:")
             answer_label.pack()
-            answer_entry = tk.Text(answer_window, height=5)
+            answer_entry = tk.Text(answer_window, height=20)
             answer_entry.insert(tk.END, question["answer"])
             answer_entry.pack()
 
