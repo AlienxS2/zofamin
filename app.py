@@ -23,13 +23,13 @@ class Application(tk.Tk):
         self.menu.add_cascade(label="Файл", menu=file_menu)
 
         questions_menu = tk.Menu(self.menu, tearoff=0)
-        questions_menu.add_command(label="Добавить", command=add_question)
-        questions_menu.add_command(label="Редактировать", command=edit_question)
+        questions_menu.add_command(label="Добавить", command=lambda: add_question(self))
+        questions_menu.add_command(label="Редактировать", command=lambda: edit_question(self))
         questions_menu.add_command(label="Удалить", command=lambda: delete_question(self))
         self.menu.add_cascade(label="Вопросы", menu=questions_menu)
 
         training_menu = tk.Menu(self.menu, tearoff=0)
-        training_menu.add_command(label="Начать", command=start_training)
+        training_menu.add_command(label="Начать", command=lambda: start_training(self))
         self.menu.add_cascade(label="Обучение", menu=training_menu)
 
         self.config(menu=self.menu)
@@ -106,6 +106,22 @@ class Application(tk.Tk):
         self.table.delete(*self.table.get_children())  # Очищаем таблицу
         print("Файл закрыт")
 
+    def get_selected_question(self):
+        selected_item = self.table.focus()  # Получаем выделенный элемент в таблице
+        if selected_item:
+            item_data = self.table.item(selected_item)
+            question_data = item_data['values']
+            selected_question = {
+                "question": question_data[2],
+                "answer": question_data[3],
+                "difficulty": question_data[4],
+                "date": question_data[1],
+                "memory": question_data[5]
+            }
+            return selected_question
+        else:
+            return None
+    
 if __name__ == "__main__":
     app = Application()
     app.mainloop()
