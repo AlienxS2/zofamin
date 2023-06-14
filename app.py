@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
 import json
-import codecs
+from utils import add_question, edit_question, delete_question, start_training
 
 class Application(tk.Tk):
     def __init__(self):
@@ -23,13 +23,13 @@ class Application(tk.Tk):
         self.menu.add_cascade(label="Файл", menu=file_menu)
 
         questions_menu = tk.Menu(self.menu, tearoff=0)
-        questions_menu.add_command(label="Добавить", command=self.add_question)
-        questions_menu.add_command(label="Редактировать", command=self.edit_question)
-        questions_menu.add_command(label="Удалить", command=self.delete_question)
+        questions_menu.add_command(label="Добавить", command=add_question)
+        questions_menu.add_command(label="Редактировать", command=edit_question)
+        questions_menu.add_command(label="Удалить", command=lambda: delete_question(self))
         self.menu.add_cascade(label="Вопросы", menu=questions_menu)
 
         training_menu = tk.Menu(self.menu, tearoff=0)
-        training_menu.add_command(label="Начать", command=self.start_training)
+        training_menu.add_command(label="Начать", command=start_training)
         self.menu.add_cascade(label="Обучение", menu=training_menu)
 
         self.config(menu=self.menu)
@@ -105,18 +105,6 @@ class Application(tk.Tk):
         self.data = []  # Очищаем данные
         self.table.delete(*self.table.get_children())  # Очищаем таблицу
         print("Файл закрыт")
-
-    def add_question(self):
-        print("Добавить вопрос")
-
-    def edit_question(self):
-        print("Редактировать вопрос")
-
-    def delete_question(self):
-        print("Удалить вопрос")
-
-    def start_training(self):
-        print("Начать обучение")
 
 if __name__ == "__main__":
     app = Application()
