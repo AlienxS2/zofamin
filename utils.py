@@ -196,9 +196,9 @@ def start_training(app):
 
         question_label = tk.Label(question_window, text="Вопрос:")
         question_label.pack()
-        question_text = tk.Text(question_window, height=25)
-        question_text.insert(tk.END, random_question["question"])
-        question_text.pack()
+        question_entry = tk.Text(question_window, height=20)
+        question_entry.insert(tk.END, question["question"])
+        question_entry.pack()
 
         def show_answer():
             question_window.destroy()
@@ -210,9 +210,9 @@ def start_training(app):
 
             answer_label = tk.Label(answer_window, text="Ответ:")
             answer_label.pack()
-            answer_text = tk.Text(answer_window, height=25)
-            answer_text.insert(tk.END, random_question["answer"])
-            answer_text.pack()
+            answer_entry = tk.Text(answer_window, height=20)
+            answer_entry.insert(tk.END, question["answer"])
+            answer_entry.pack()
 
             def next_question():
                 answer_window.destroy()
