@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import Toplevel, Label, Button, Entry, messagebox
-from datetime import datetime
+import random
 
 def add_question(app):
     def save_question():
@@ -176,114 +176,62 @@ def delete_question(app):
     app.display_data()
     print("Вопрос удален")
 
+import tkinter as tk
+from tkinter import Toplevel, Label, Button, messagebox
+import random
+
 def start_training(app):
     if not app.data:
         messagebox.showinfo("Нет вопросов", "Нет вопросов для обучения")
         return
 
-    def calculate_how_old(date):
-        current_date = datetime.now().date()
-        question_date = datetime.strptime(date, "%d.%m.%Y").date()
-        return (current_date - question_date).days
+    while True:
+        # Выбираем случайный вопрос
+        random_question = random.choice(app.data)
 
-    def calculate_keff(difficulty, how_old):
-        return difficulty * how_old
-
-    def sort_by_keff(data):
-        return sorted(data, key=lambda item: item["keff"], reverse=True)
-
-    must_memorise = []
-    just_memorise = []
-
-    for item in app.data:
-        how_old = calculate_how_old(item["date"])
-        keff = calculate_keff(item["difficulty"], how_old)
-        item["keff"] = keff
-
-        if item["memory"] == 1:
-            must_memorise.append(item)
-        else:
-            just_memorise.append(item)
-
-    must_memorise = sort_by_keff(must_memorise)
-    just_memorise = sort_by_keff(just_memorise)
-
-    def show_question():
-        nonlocal current_index
-
-        if must_memorise:
-            question = must_memorise.pop(0)
-        elif just_memorise:
-            question = just_memorise.pop(0)
-        else:
-            messagebox.showinfo("Тренировка завершена", "Больше нет вопросов")
-            return
-
+        # Окно "Вопрос"
         question_window = tk.Toplevel(app)
         question_window.title("Вопрос")
         question_window.geometry("800x600")
 
         question_label = tk.Label(question_window, text="Вопрос:")
         question_label.pack()
-        question_entry = tk.Text(question_window, height=20)
-        question_entry.insert(tk.END, question["question"])
-        question_entry.pack()
+        question_text = tk.Text(question_window, height=25)
+        question_text.insert(tk.END, random_question["question"])
+        question_text.pack()
 
         def show_answer():
-            nonlocal current_index
-
             question_window.destroy()
 
+            # Окно "Ответ"
             answer_window = tk.Toplevel(app)
             answer_window.title("Ответ")
             answer_window.geometry("800x600")
 
             answer_label = tk.Label(answer_window, text="Ответ:")
             answer_label.pack()
-            answer_entry = tk.Text(answer_window, height=20)
-            answer_entry.insert(tk.END, question["answer"])
-            answer_entry.pack()
+            answer_text = tk.Text(answer_window, height=25)
+            answer_text.insert(tk.END, random_question["answer"])
+            answer_text.pack()
 
-            difficulty_label = tk.Label(answer_window, text="Сложность:")
-            difficulty_label.pack()
-            difficulty_entry = tk.Entry(answer_window)
-            difficulty_entry.insert(tk.END, str(question["difficulty"]))
-            difficulty_entry.pack()
-
-            memory_label = tk.Label(answer_window, text="Зауч:")
-            memory_label.pack()
-            memory_entry = tk.Entry(answer_window)
-            memory_entry.insert(tk.END, str(question["memory"]))
-            memory_entry.pack()
-
-            def save_feedback():
-                nonlocal current_index
-
-                new_difficulty = int(difficulty_entry.get())
-                new_memory = int(memory_entry.get())
-
-                app.data[current_index]["difficulty"] = new_difficulty
-                app.data[current_index]["memory"] = new_memory
-
+            def next_question():
                 answer_window.destroy()
+                start_training(app)  # Запуск следующего вопроса после закрытия окна ответа
 
-                if must_memorise:
-                    show_question()
-                elif just_memorise:
-                    show_question()
-                else:
-                    messagebox.showinfo("Тренировка завершена", "Больше нет вопросов")
+            def finish_training():
+                answer_window.destroy()
+                return
 
-            finish_button = tk.Button(answer_window, text="Далее", command=save_feedback)
+            next_button = tk.Button(answer_window, text="Далее", command=next_question)
+            next_button.pack()
+
+            finish_button = tk.Button(answer_window, text="Завершить обучение", command=finish_training)
             finish_button.pack()
 
-            finish_training_button = tk.Button(answer_window, text="Завершить обучение", command=answer_window.destroy)
-            finish_training_button.pack()
+        show_button = tk.Button(question_window, text="Показать ответ", command=show_answer)
+        show_button.pack()
 
-        next_button = tk.Button(question_window, text="Показать ответ", command=show_answer)
-        next_button.pack()
+        app.wait_window(question_window)
 
-        current_index = app.data.index(question)
-
-    current_index = None
-    show_question()
+        if not question_window.winfo_exists():  # Проверка, было ли окно закрыто пользователем
+            break
