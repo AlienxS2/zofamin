@@ -1,7 +1,51 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QAction, QVBoxLayout, QWidget, QHeaderView, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QAction, QVBoxLayout, QWidget, QHeaderView, QTableWidgetItem, QTextEdit, QPushButton
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QDialog
 import json
-from PyQt5.QtWidgets import QFileDialog
+import random
+
+class TrainingWindow(QDialog):
+    def __init__(self, questions):
+        super().__init__()
+        self.setWindowTitle("Обучение")
+        self.resize(800, 600)
+
+        self.current_question_index = 0
+        self.questions = questions
+
+        self.question_text = QTextEdit(self.questions[self.current_question_index]["question"])
+        self.question_text.setReadOnly(True)
+
+        self.answer_text = QTextEdit(self.questions[self.current_question_index]["answer"])
+        self.answer_text.setReadOnly(True)
+        self.answer_text.hide()
+
+        self.show_answer_button = QPushButton("Показать ответ")
+        self.next_question_button = QPushButton("Следующий вопрос")
+        self.finish_button = QPushButton("Завершить")
+
+        self.show_answer_button.clicked.connect(self.show_answer)
+        self.next_question_button.clicked.connect(self.next_question)
+        self.finish_button.clicked.connect(self.close)
+
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(self.question_text)
+        main_layout.addWidget(self.answer_text)
+        main_layout.addWidget(self.show_answer_button)
+        main_layout.addWidget(self.next_question_button)
+        main_layout.addWidget(self.finish_button)
+
+        self.setLayout(main_layout)
+
+    def show_answer(self):
+        self.answer_text.show()
+
+    def next_question(self):
+        self.current_question_index = (self.current_question_index + 1) % len(self.questions)
+        self.question_text.setPlainText(self.questions[self.current_question_index]["question"])
+        self.answer_text.setPlainText(self.questions[self.current_question_index]["answer"])
+        self.answer_text.hide()
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -68,9 +112,9 @@ class MainWindow(QMainWindow):
                     if isinstance(data, list) and all("question" in item and "answer" in item for item in data):
                         self.load_data_to_table(data)
                     else:
-                        print("Файл не соответствует требованиям")
+                        QMessageBox.warning(self, "Ошибка", "Файл не соответствует требованиям")
             except (IOError, json.JSONDecodeError) as e:
-                print(f"Ошибка при открытии файла: {str(e)}")
+                QMessageBox.warning(self, "Ошибка", f"Ошибка при открытии файла: {str(e)}")
 
     def load_data_to_table(self, data):
         self.table.setRowCount(0)
@@ -82,7 +126,19 @@ class MainWindow(QMainWindow):
             self.table.setItem(row, 1, QTableWidgetItem(answer))
 
     def start_training(self):
-        print("Начать обучение")
+        if self.table.rowCount() == 0:
+            QMessageBox.warning(self, "Предупреждение", "Выберите файл для обучения")
+        else:
+            questions = []
+            for row in range(self.table.rowCount()):
+                question = self.table.item(row, 0).text()
+                answer = self.table.item(row, 1).text()
+                questions.append({"question": question, "answer": answer})
+
+            random.shuffle(questions)
+
+            training_window = TrainingWindow(questions)
+            training_window.exec_()
 
     def add_question(self):
         print("Добавить вопрос")
