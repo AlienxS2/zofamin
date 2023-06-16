@@ -1,6 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QAction, QVBoxLayout, QWidget, QHeaderView, QTableWidgetItem, QTextEdit, QPushButton
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QAction, QVBoxLayout, QWidget, QHeaderView, QTableWidgetItem, QTextEdit, QPushButton, QFileDialog, QMessageBox, QDialog, QLabel, QPlainTextEdit
 import json
 import random
 
@@ -72,6 +71,9 @@ class MainWindow(QMainWindow):
         self.open_action = QAction("Открыть", self)
         self.open_action.triggered.connect(self.open_file)
 
+        self.save_action = QAction("Сохранить", self)
+        self.save_action.triggered.connect(self.save_file)
+
         self.exit_action = QAction("Выход", self)
         self.exit_action.triggered.connect(self.close)
 
@@ -90,6 +92,7 @@ class MainWindow(QMainWindow):
     def create_menus(self):
         file_menu = self.menuBar().addMenu("Файл")
         file_menu.addAction(self.open_action)
+        file_menu.addAction(self.save_action)
         file_menu.addAction(self.exit_action)
 
         training_menu = self.menuBar().addMenu("Обучение")
@@ -98,7 +101,6 @@ class MainWindow(QMainWindow):
         training_menu.addAction(self.edit_action)
         training_menu.addAction(self.delete_action)
 
-     
     def open_file(self):
         file_dialog = QFileDialog()
         file_dialog.setFileMode(QFileDialog.ExistingFile)
@@ -115,6 +117,31 @@ class MainWindow(QMainWindow):
                         QMessageBox.warning(self, "Ошибка", "Файл не соответствует требованиям")
             except (IOError, json.JSONDecodeError) as e:
                 QMessageBox.warning(self, "Ошибка", f"Ошибка при открытии файла: {str(e)}")
+
+    def save_file(self):
+        if self.table.rowCount() == 0:
+            QMessageBox.warning(self, "Предупреждение", "Нет данных для сохранения")
+            return
+
+        file_dialog = QFileDialog()
+        file_dialog.setAcceptMode(QFileDialog.AcceptSave)
+        file_dialog.setNameFilter("JSON Files (*.json)")
+        file_dialog.setDirectory("data")
+        if file_dialog.exec_():
+            file_path = file_dialog.selectedFiles()[0]
+            try:
+                data = []
+                for row in range(self.table.rowCount()):
+                    question = self.table.item(row, 0).text()
+                    answer = self.table.item(row, 1).text()
+                    data.append({"question": question, "answer": answer})
+
+                with open(file_path, "w", encoding="utf-8") as file:
+                    json.dump(data, file, indent=4, ensure_ascii=False)
+
+                QMessageBox.information(self, "Сохранено", "Данные успешно сохранены")
+            except Exception as e:
+                QMessageBox.warning(self, "Ошибка", f"Ошибка при сохранении файла: {str(e)}")
 
     def load_data_to_table(self, data):
         self.table.setRowCount(0)
@@ -141,14 +168,144 @@ class MainWindow(QMainWindow):
             training_window.exec_()
 
     def add_question(self):
-        print("Добавить вопрос")
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Добавить вопрос")
+        dialog.resize(800, 600)
+
+        question_text = QPlainTextEdit()
+        answer_text = QPlainTextEdit()
+
+        save_button = QPushButton("Сохранить")
+        cancel_button = QPushButton("Отмена")
+
+        def save_question():
+            question = question_text.toPlainText()
+            answer = answer_text.toPlainText()
+            if question and answer:
+                row = self.table.rowCount()
+                self.table.insertRow(row)
+                self.table.setItem(row, 0, QTableWidgetItem(question))
+                self.table.setItem(row, 1, QTableWidgetItem(answer))
+                dialog.close()
+            else:
+                QMessageBox.warning(dialog, "Ошибка", "Заполните все поля")
+
+        save_button.clicked.connect(save_question)
+        cancel_button.clicked.connect(dialog.close)
+
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Вопрос:"))
+        layout.addWidget(question_text)
+        layout.addWidget(QLabel("Ответ:"))
+        layout.addWidget(answer_text)
+        layout.addWidget(save_button)
+        layout.addWidget(cancel_button)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
 
     def edit_question(self):
-        print("Редактировать вопрос")
+        selected_rows = set(index.row() for index in self.table.selectionModel().selectedIndexes())
+
+        if len(selected_rows) == 1:
+            row = selected_rows.pop()
+            question = self.table.item(row, 0).text()
+            answer = self.table.item(row, 1).text()
+
+            dialog = QDialog(self)
+            dialog.setWindowTitle("Редактировать вопрос")
+            dialog.resize(800, 600)
+
+            question_text = QPlainTextEdit(question)
+            answer_text = QPlainTextEdit(answer)
+
+            save_button = QPushButton("Сохранить")
+            cancel_button = QPushButton("Отмена")
+
+            def save_question():
+                new_question = question_text.toPlainText()
+                new_answer = answer_text.toPlainText()
+                if new_question and new_answer:
+                    self.table.setItem(row, 0, QTableWidgetItem(new_question))
+                    self.table.setItem(row, 1, QTableWidgetItem(new_answer))
+                    dialog.close()
+                else:
+                    QMessageBox.warning(dialog, "Ошибка", "Заполните все поля")
+
+            save_button.clicked.connect(save_question)
+            cancel_button.clicked.connect(dialog.close)
+
+            layout = QVBoxLayout()
+            layout.addWidget(QLabel("Вопрос:"))
+            layout.addWidget(question_text)
+            layout.addWidget(QLabel("Ответ:"))
+            layout.addWidget(answer_text)
+            layout.addWidget(save_button)
+            layout.addWidget(cancel_button)
+
+            dialog.setLayout(layout)
+            dialog.exec_()
+        elif len(selected_rows) == 0:
+            selected_cells = self.table.selectionModel().selectedIndexes()
+            if len(selected_cells) == 1:
+                row = selected_cells[0].row()
+                question = self.table.item(row, 0).text()
+                answer = self.table.item(row, 1).text()
+
+                dialog = QDialog(self)
+                dialog.setWindowTitle("Редактировать вопрос")
+                dialog.resize(800, 600)
+
+                question_text = QPlainTextEdit(question)
+                answer_text = QPlainTextEdit(answer)
+
+                save_button = QPushButton("Сохранить")
+                cancel_button = QPushButton("Отмена")
+
+                def save_question():
+                    new_question = question_text.toPlainText()
+                    new_answer = answer_text.toPlainText()
+                    if new_question and new_answer:
+                        self.table.setItem(row, 0, QTableWidgetItem(new_question))
+                        self.table.setItem(row, 1, QTableWidgetItem(new_answer))
+                        dialog.close()
+                    else:
+                        QMessageBox.warning(dialog, "Ошибка", "Заполните все поля")
+
+                save_button.clicked.connect(save_question)
+                cancel_button.clicked.connect(dialog.close)
+
+                layout = QVBoxLayout()
+                layout.addWidget(QLabel("Вопрос:"))
+                layout.addWidget(question_text)
+                layout.addWidget(QLabel("Ответ:"))
+                layout.addWidget(answer_text)
+                layout.addWidget(save_button)
+                layout.addWidget(cancel_button)
+
+                dialog.setLayout(layout)
+                dialog.exec_()
+            else:
+                QMessageBox.warning(self, "Ошибка", "Выберите одну строку или одну ячейку для редактирования")
+        else:
+            QMessageBox.warning(self, "Ошибка", "Выберите одну строку или одну ячейку для редактирования")
+
+
 
     def delete_question(self):
-        print("Удалить вопрос")
-
+        selected_rows = self.table.selectionModel().selectedRows()
+        selected_cells = self.table.selectionModel().selectedIndexes()
+        
+        if len(selected_rows) == 1:
+            row = selected_rows[0].row()
+            self.table.removeRow(row)
+            QMessageBox.information(self, "Удалено", "Выбранный вопрос удален")
+        elif len(selected_cells) == 1:
+            row = selected_cells[0].row()
+            self.table.removeRow(row)
+            QMessageBox.information(self, "Удалено", "Выбранный вопрос удален")
+        else:
+            QMessageBox.warning(self, "Ошибка", "Выделите вопрос для удаления")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

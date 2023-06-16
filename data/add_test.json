@@ -1,0 +1,10 @@
+[
+    {
+        "question": "\n    def insertFromMimeData(self, source):\n\n        cursor = self.textCursor()\n        document = self.document()\n\n        if source.hasUrls():\n\n            for u in source.urls():\n                file_ext = splitext(str(u.toLocalFile()))\n                if u.isLocalFile() and file_ext in IMAGE_EXTENSIONS:\n                    image = QImage(u.toLocalFile())\n                    document.addResource(QTextDocument.ImageResource, u, image)\n                    cursor.insertImage(u.toLocalFile())",
+        "answer": "\n            for u in source.urls():\n                file_ext = splitext(str(u.toLocalFile()))\n                if u.isLocalFile() and file_ext in IMAGE_EXTENSIONS:\n                    image = QImage(u.toLocalFile())\n                    document.addResource(QTextDocument.ImageResource, u, image)\n                    cursor.insertImage(u.toLocalFile())"
+    },
+    {
+        "question": "Вопрос\nЗе вопрос\n\t\tтаб\n         .               .                       .\n. . . .  . .     . . . \tтаб",
+        "answer": "0\n 1\n  2\n   3\n    4\n     5\n      6\n       7\n        8\n\tтаб\n1 1\n"
+    }
+]
