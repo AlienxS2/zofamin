@@ -1,0 +1,10 @@
+[
+    {
+        "question": "Что будет выведено на экран в результате исполнения данного кода?\n\na = []\n\ndef foo(arg1, arg2):\n  a.append(\"foo\")\n\nfoo(a.append(\"arg1\"), a.append(\"arg2\"))\n\nprint(a)\n\n",
+        "answer": "['arg1', 'arg2', 'foo']"
+    },
+    {
+        "question": "Результат исполнения кода:\nx = print(4)\nprint(x, type(x))",
+        "answer": "4\nNone <class 'NoneType'>"
+    }
+]
