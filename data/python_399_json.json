@@ -1,0 +1,195 @@
+[
+    {
+        "question": "Что такое JSON?",
+        "answer": "JSON (JavaScript Object Notation) - это формат обмена данными, представляющий собой строку со словарем. Он используется для передачи структурированных данных между приложениями. Пример JSON:\n\n```json\n{\n    \"kwarg1\": \"value_1\",\n    \"kwarg2\": \"value_2\",\n    \"kwarg3\": \"value_3\",\n    \"additional\": [\"value_4\", \"value_5\", \"value_6\"]\n}\n```"
+    },
+    {
+        "question": "Что такое сериализация и десериализация?",
+        "answer": "Сериализация - это процесс преобразования объектов языка программирования в JSON-строку или байтовую последовательность. Десериализация - это обратный процесс, при котором JSON-строка или байтовая последовательность преобразуется обратно в объекты языка программирования. Примеры кода на Python:\n\n```python\nimport json\n\n# Сериализация\nmydict = {\"title\": \"Some test string\", \"code\": 211, \"data\": [1, 2, 3, 4, 5]}\njson_str = json.dumps(mydict)\nprint(json_str)\n\n# Десериализация\njson_str = '{\"title\": \"Some test string\", \"code\": 211, \"data\": [1, 2, 3, 4, 5]}'\nmydict = json.loads(json_str)\nprint(mydict)\n```"
+    },
+    {
+        "question": "Какие функции предоставляет библиотека JSON в Python?",
+        "answer": "Библиотека JSON в Python предоставляет следующие функции:\n\n1. `dumps(obj)`: Создает JSON-строку из переданного объекта.\n\n2. `loads(json_str)`: Преобразует JSON-строку обратно в объекты языка программирования.\n\n3. `dump(obj, filehandler)`: Записывает структуру в файл, используя переданный объект для работы с файлом.\n\n4. `load(filehandler)`: Загружает структуру из файла, используя переданный объект для работы с файлом.\n\nПримеры кода на Python:\n\n```python\nimport json\n\n# dumps\nmydict = {\"title\": \"Some test string\", \"code\": 211, \"data\": [1, 2, 3, 4, 5]}\njson_str = json.dumps(mydict)\nprint(json_str)\n\n# loads\njson_str = '{\"title\": \"Some test string\", \"code\": 211, \"data\": [1, 2, 3, 4, 5]}'\nmydict = json.loads(json_str)\nprint(mydict)\n\n# dump\nwith open(\"data.json\", \"w\") as fh:\n    json.dump([1, 2, 3, 4, 5], fh)\n\n# load\nwith open(\"data.json\", \"r\") as fh:\n    data = json.load(fh)\nprint(data)\n```"
+    },
+    {
+        "question": "Что такое JSON-сериализация?",
+        "answer": "JSON-сериализация - это процесс преобразования объектов языка программирования в JSON-строку. В статье описаны три способа решения проблемы сериализации пользовательских объектов в JSON:\n\n1. Использование анонимной функции (лямбды), которая возвращает словарь `__dict__` объекта. Пример:\n\n```python\njson.dumps(t, default=lambda x: x.__dict__)\n```\n\n2. Создание отдельной функции, которая принимает объект и возвращает словарь `__dict__` с дополнительными полями, например, название класса. Пример:\n\n```python\ndef to_json(obj):\n    if isinstance(obj, Test):\n        result = obj.__dict__\n        result[\"className\"] = obj.__class__.__name__\n        return result\n\njson.dumps(t, default=to_json)\n```\n\n3. Создание расширения класса `json.JSONEncoder`, переопределение метода `default` и возвращение словаря с нужными полями. Пример:\n\n```python\nclass TestEncoder(json.JSONEncoder):\n    def default(self, o):\n        return {\"TITLE\": o.title, \"BODY\": o.body, \"CLASSNAME\": o.__class__.__name__}\n\nx = json.dumps(t, cls=TestEncoder)\n```"
+    },
+    {
+        "question": "Какие способы решения проблемы сериализации пользовательских объектов в JSON описаны в статье?",
+        "answer": "В статье описаны три способа решения проблемы сериализации пользовательских объектов в JSON:\n\n1. Использование анонимной функции (лямбды), которая возвращает словарь `__dict__` объекта.\n\n2. Создание отдельной функции, которая принимает объект и возвращает словарь `__dict__` с дополнительными полями, например, название класса.\n\n3. Создание расширения класса `json.JSONEncoder`, переопределение метода `default` и возвращение словаря с нужными полями."
+    },
+    {
+        "question": "Какой подход позволяет добавить название класса в сериализуемую структуру?",
+        "answer": "Для добавления названия класса в сериализуемую структуру можно использовать отдельную функцию или создать расширение класса `json.JSONEncoder`. В обоих случаях можно добавить поле с названием класса в словарь `__dict__` объекта. Пример:\n\n```python\ndef to_json(obj):\n    if isinstance(obj, Test):\n        result = obj.__dict__\n        result[\"className\"] = obj.__class__.__name__\n        return result\n\njson.dumps(t, default=to_json)\n```\n\nили\n\n```python\nclass TestEncoder(json.JSONEncoder):\n    def default(self, o):\n        return {\"TITLE\": o.title, \"BODY\": o.body, \"CLASSNAME\": o.__class__.__name__}\n\nx = json.dumps(t, cls=TestEncoder)\n```"
+    },
+    {
+        "question": "Что делает класс JSONDataAdapter?",
+        "answer": "Класс JSONDataAdapter предоставляет статические методы `to_json` и `from_json`, которые позволяют преобразовывать объекты фигуры в JSON и восстанавливать объекты фигуры из JSON соответственно. Метод `to_json` принимает объект фигуры и возвращает его представление в виде JSON-строки. Метод `from_json` принимает JSON-строку и восстанавливает объект фигуры из нее. В случае неверной структуры JSON-строки, метод `from_json` выводит сообщение об ошибке.",
+        "code": "class JSONDataAdapter:\n    @staticmethod\n    def to_json(o):\n        if isinstance(o, Figure):\n            return json.dumps({\n              \"title\": o.title,\n              \"form\": o.form.name,\n              \"color\": o.color.name,\n            })\n\n    @staticmethod\n    def from_json(o):\n        o = json.loads(o)\n\n        try:\n            form = Form(o[\"form\"])\n            color = Color(o[\"color\"])\n            figure = Figure(o[\"title\"], form, color)\n            return figure\n        except AttributeError:\n            print(\"Неверная структура\")"
+    },
+    {
+        "question": "Какие методы предоставляет класс JSONDataAdapter?",
+        "answer": "Класс JSONDataAdapter предоставляет два статических метода: `to_json` и `from_json`. Метод `to_json` преобразует объект фигуры в JSON-строку, а метод `from_json` восстанавливает объект фигуры из JSON-строки.",
+        "code": "class JSONDataAdapter:\n    @staticmethod\n    def to_json(o):\n        if isinstance(o, Figure):\n            return json.dumps({\n              \"title\": o.title,\n              \"form\": o.form.name,\n              \"color\": o.color.name,\n            })\n\n    @staticmethod\n    def from_json(o):\n        o = json.loads(o)\n\n        try:\n            form = Form(o[\"form\"])\n            color = Color(o[\"color\"])\n            figure = Figure(o[\"title\"], form, color)\n            return figure\n        except AttributeError:\n            print(\"Неверная структура\")"
+    },
+    {
+        "question": "Как преобразовать объект фигуры в JSON-строку с использованием класса JSONDataAdapter?",
+        "answer": "Для преобразования объекта фигуры в JSON-строку с использованием класса JSONDataAdapter, вызовите статический метод `to_json` и передайте ему объект фигуры в качестве аргумента. Ниже приведен пример кода:\n\n```python\nfigure = Figure(\"Black Square\", form=square, color=black)\njson_string = JSONDataAdapter.to_json(figure)\nprint(json_string)\n```\n\nВывод:\n\n```json\n{\"title\": \"Black Square\", \"form\": \"Squared\", \"color\": \"Black\"}\n```",
+        "code": "figure = Figure(\"Black Square\", form=square, color=black)\njson_string = JSONDataAdapter.to_json(figure)\nprint(json_string)"
+    },
+    {
+        "question": "Как восстановить объект фигуры из JSON-строки с использованием класса JSONDataAdapter?",
+        "answer": "Для восстановления объекта фигуры из JSON-строки с использованием класса JSONDataAdapter, вызовите статический метод `from_json` и передайте ему JSON-строку в качестве аргумента. Ниже приведен пример кода:\n\n```python\njson_string = \"{\\\"title\\\": \\\"Black Square\\\", \\\"form\\\": \\\"Squared\\\", \\\"color\\\": \\\"Black\\\"}\"\nrestored_figure = JSONDataAdapter.from_json(json_string)\nprint(restored_figure)\n```\n\nВывод:\n\n```python\nFigure: Black Square, <Form: Squared>, <Color: Black>\n```",
+        "code": "json_string = \"{\\\"title\\\": \\\"Black Square\\\", \\\"form\\\": \\\"Squared\\\", \\\"color\\\": \\\"Black\\\"}\"\nrestored_figure = JSONDataAdapter.from_json(json_string)\nprint(restored_figure)"
+    },
+    {
+        "question": "Что делает класс JSONDataAdapter?",
+        "answer": "Класс JSONDataAdapter предоставляет статические методы `to_json` и `from_json`, которые позволяют преобразовывать объекты фигуры в JSON и восстанавливать объекты фигуры из JSON соответственно. Метод `to_json` принимает объект фигуры и возвращает его представление в виде JSON-строки. Метод `from_json` принимает JSON-строку и восстанавливает объект фигуры из нее. В случае неверной структуры JSON-строки, метод `from_json` выводит сообщение об ошибке.",
+        "code": "class JSONDataAdapter:\n    @staticmethod\n    def to_json(o):\n        if isinstance(o, Figure):\n            return json.dumps({\n              \"title\": o.title,\n              \"form\": o.form.name,\n              \"color\": o.color.name,\n            })\n\n    @staticmethod\n    def from_json(o):\n        o = json.loads(o)\n\n        try:\n            form = Form(o[\"form\"])\n            color = Color(o[\"color\"])\n            figure = Figure(o[\"title\"], form, color)\n            return figure\n        except AttributeError:\n            print(\"Неверная структура\")"
+    },
+    {
+        "question": "Какие методы предоставляет класс JSONDataAdapter?",
+        "answer": "Класс JSONDataAdapter предоставляет два статических метода: `to_json` и `from_json`. Метод `to_json` преобразует объект фигуры в JSON-строку, а метод `from_json` восстанавливает объект фигуры из JSON-строки.",
+        "code": "class JSONDataAdapter:\n    @staticmethod\n    def to_json(o):\n        if isinstance(o, Figure):\n            return json.dumps({\n              \"title\": o.title,\n              \"form\": o.form.name,\n              \"color\": o.color.name,\n            })\n\n    @staticmethod\n    def from_json(o):\n        o = json.loads(o)\n\n        try:\n            form = Form(o[\"form\"])\n            color = Color(o[\"color\"])\n            figure = Figure(o[\"title\"], form, color)\n            return figure\n        except AttributeError:\n            print(\"Неверная структура\")"
+    },
+    {
+        "question": "Как преобразовать объект фигуры в JSON-строку с использованием класса JSONDataAdapter?",
+        "answer": "Для преобразования объекта фигуры в JSON-строку с использованием класса JSONDataAdapter, вызовите статический метод `to_json` и передайте ему объект фигуры в качестве аргумента. Ниже приведен пример кода:\n\n```python\nfigure = Figure(\"Black Square\", form=square, color=black)\njson_string = JSONDataAdapter.to_json(figure)\nprint(json_string)\n```\n\nВывод:\n\n```json\n{\"title\": \"Black Square\", \"form\": \"Squared\", \"color\": \"Black\"}\n```",
+        "code": "figure = Figure(\"Black Square\", form=square, color=black)\njson_string = JSONDataAdapter.to_json(figure)\nprint(json_string)"
+    },
+    {
+        "question": "Как восстановить объект фигуры из JSON-строки с использованием класса JSONDataAdapter?",
+        "answer": "Для восстановления объекта фигуры из JSON-строки с использованием класса JSONDataAdapter, вызовите статический метод `from_json` и передайте ему JSON-строку в качестве аргумента. Ниже приведен пример кода:\n\n```python\njson_string = \"{\\\"title\\\": \\\"Black Square\\\", \\\"form\\\": \\\"Squared\\\", \\\"color\\\": \\\"Black\\\"}\"\nrestored_figure = JSONDataAdapter.from_json(json_string)\nprint(restored_figure)\n```\n\nВывод:\n\n```python\nFigure: Black Square, <Form: Squared>, <Color: Black>\n```",
+        "code": "json_string = \"{\\\"title\\\": \\\"Black Square\\\", \\\"form\\\": \\\"Squared\\\", \\\"color\\\": \\\"Black\\\"}\"\nrestored_figure = JSONDataAdapter.from_json(json_string)\nprint(restored_figure)"
+    },
+    {
+        "question": "Как конвертировать словарь в JSON-строку в Python?",
+        "answer": "Вы можете конвертировать словарь в JSON-строку с помощью метода json.dumps(). Вот пример:\n\n```python\nimport json\n\nperson_dict = {'name': 'Bob', 'age': 12, 'children': None}\nperson_json = json.dumps(person_dict)\n\n# Вывод: {\"name\": \"Bob\", \"age\": 12, \"children\": null}\nprint(person_json)\n```\n\nВ этом примере мы используем метод `json.dumps()` для преобразования словаря `person_dict` в JSON-строку."
+    },
+    {
+        "question": "Как записать JSON в файл в Python?",
+        "answer": "Чтобы записать JSON в файл в Python, вы можете использовать метод json.dump(). Вот пример:\n\n```python\nimport json\n\nperson_dict = {\"name\": \"Bob\", \"languages\": [\"English\", \"French\"], \"married\": True, \"age\": 32}\n\nwith open('person.txt', 'w') as json_file:\n    json.dump(person_dict, json_file)\n```\n\nВ этой программе мы открываем файл с именем `person.txt` в режиме записи с помощью 'w'. Если файл еще не существует, он будет создан. Затем метод `json.dump()` преобразует словарь `person_dict` в JSON-строку, которая будет сохранена в файле `person.txt`."
+    },
+    {
+        "question": "Как красиво вывести JSON в Python?",
+        "answer": "Чтобы вывести JSON в более читаемом формате, вы можете использовать параметры `indent` и `sort_keys` методов `json.dumps()` и `json.dump()`. Вот пример:\n\n```python\nimport json\n\nperson_string = '{\"name\": \"Bob\", \"languages\": \"English\", \"numbers\": [2, 1.6, null]}'\n\n# Получение словаря\nperson_dict = json.loads(person_string)\n\n# Красивая печать JSON-строки\nprint(json.dumps(person_dict, indent=4, sort_keys=True))\n```\n\nПри выполнении программы вывод будет следующим:\n\n```\n{\n    \"languages\": \"English\",\n    \"name\": \"Bob\",\n    \"numbers\": [\n        2,\n        1.6,\n        null\n    ]\n}\n```\n\nВ этом примере мы использовали 4 пробела для отступа. Ключи также отсортированы в порядке возрастания.\n\nЗаметьте, что значение по умолчанию для `indent` - `None`, а для `sort_keys` - `False`."
+    },
+    {
+        "question": "Как конвертировать объекты Python в JSON?",
+        "answer": "Вы можете использовать функцию `json.dumps()` для кодирования объектов Python в формат JSON. Вот примеры:\n\n```python\nimport json\n\n# Пример 1: Кодирование списка и словаря\njson.dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])\n# Вывод: '[\"foo\", {\"bar\": [\"baz\", null, 1.0, 2]}]'\n\n# Пример 2: Кодирование строки\njson.dumps('\"foo\\bar')\n# Вывод: '\"foo\\bar'\"\n\n# Пример 3: Кодирование специальных символов\njson.dumps('ሴ')\n# Вывод: '\"\\u1234'\"\n\n# Пример 4: Кодирование сложного объекта\njson.dumps({'4': 5, '6': 7}, sort_keys=True, indent=4)\n# Вывод:\n# '{\n#     \"4\": 5,\n#     \"6\": 7\n# }'\n```\n\nВ этих примерах мы используем функцию `json.dumps()` для преобразования различных объектов Python в их JSON-представление."
+    },
+    {
+        "question": "Как декодировать JSON в объекты Python?",
+        "answer": "Для декодирования JSON в объекты Python вы можете использовать функцию `json.loads()`. Вот примеры:\n\n```python\nimport json\n\n# Пример 1: Декодирование списка и словаря\njson.loads('[\"foo\", {\"bar\": [\"baz\", null, 1.0, 2]}]')\n# Вывод: ['foo', {'bar': ['baz', None, 1.0, 2]}]\n\n# Пример 2: Декодирование строки\njson.loads('\"foo\\bar\"')\n# Вывод: '\"foo\\x08ar'\"\n\n# Пример 3: Декодирование из файла\nfrom io import StringIO\n\nio = StringIO('[\"streaming API\"]')\njson.load(io)\n# Вывод: ['streaming API']\n```\n\nВ этих примерах мы используем функцию `json.loads()` для декодирования JSON-строк в соответствующие объекты Python."
+    },
+    {
+        "question": "Как красиво вывести JSON в Python?",
+        "answer": "Для красивой печати JSON в Python вы можете использовать параметры `indent` и `sort_keys` функции `json.dumps()`. Вот пример:\n\n```python\nimport json\n\n# Пример: Красивая печать словаря\nprint(json.dumps({'4': 5, '6': 7}, sort_keys=True, indent=4))\n# Вывод:\n# {\n#     \"4\": 5,\n#     \"6\": 7\n# }\n```\n\nВ этом примере мы используем параметры `sort_keys=True` и `indent=4` для красивой печати словаря в формате JSON."
+    },
+    {
+        "question": "Какие параметры принимает функция `json.dump()`?",
+        "answer": "Функция `json.dump()` принимает следующие параметры:\n\n- `obj`: Объект, который нужно сериализовать в формат JSON.\n- `fp`: Файлоподобный объект, поддерживающий метод `.write()`, в который будет записан сериализованный JSON.\n- `skipkeys` (по умолчанию False): Если установлено в True, то ключи словаря, которые не являются базовыми типами (str, int, float, bool, None), будут пропущены, а не вызовут TypeError.\n- `ensure_ascii` (по умолчанию True): Если установлено в True, то все не-ASCII символы будут экранированы в выходной строке. Если установлено в False, эти символы будут выведены как есть.\n- `check_circular` (по умолчанию True): Если установлено в False, то проверка на циклические ссылки для контейнерных типов будет пропущена, и циклическая ссылка приведет к RecursionError (или еще худшему).\n- `allow_nan` (по умолчанию True): Если установлено в False, то значения float, выходящие за пределы диапазона (nan, inf, -inf), не будут сериализованы в соответствии со спецификацией JSON и вызовут ValueError. Если установлено в True, будут использованы их эквиваленты в JavaScript (NaN, Infinity, -Infinity).\n- `indent`: Уровень отступа для красивой печати JSON. Может быть неотрицательным целым числом или строкой. По умолчанию None, что выбирает наиболее компактное представление.\n- `separators`: Кортеж, содержащий разделители элементов массива и разделителей ключей и значений словаря. По умолчанию (', ', ': ') если `indent` равен None и (',', ': ') в противном случае.\n- `default`: Функция, которая вызывается для объектов, которые не могут быть сериализованы. Она должна вернуть сериализуемую версию объекта или вызвать TypeError. Если не указано, будет вызван TypeError.\n- `sort_keys` (по умолчанию False): Если установлено в True, то словари будут выводиться с отсортированными ключами."
+    },
+    {
+        "question": "Как использовать функцию `json.dump()` для сериализации объекта Python в файл?",
+        "answer": "Для сериализации объекта Python в файл с использованием функции `json.dump()`, вы должны передать объект и файлоподобный объект, поддерживающий метод `.write()`. Вот пример:\n\n```python\nimport json\n\ndata = {'name': 'John', 'age': 30}\n\nwith open('data.json', 'w') as file:\n    json.dump(data, file)\n```\n\nВ этом примере мы создаем словарь `data` и затем используем `json.dump()` для записи сериализованного JSON в файл с именем `data.json`."
+    },
+    {
+        "question": "Как использовать параметр `indent` в функции `json.dump()` для красивой печати JSON?",
+        "answer": "Параметр `indent` в функции `json.dump()` позволяет задать уровень отступа для красивой печати JSON. Вот пример:\n\n```python\nimport json\n\ndata = {'name': 'John', 'age': 30}\n\nwith open('data.json', 'w') as file:\n    json.dump(data, file, indent=4)\n```\n\nВ этом примере мы используем `indent=4`, чтобы установить отступ в 4 пробела для каждого уровня вложенности в JSON-файле."
+    },
+    {
+        "question": "Что такое JSON?",
+        "answer": "JSON (JavaScript Object Notation) - это формат обмена данными, основанный на подмножестве языка JavaScript. Он используется для представления структурированных данных в виде текста, который легко читается и записывается как людьми, так и компьютерами. В JSON поддерживаются примитивные типы данных, такие как строки и числа, а также вложенные списки и объекты."
+    },
+    {
+        "question": "Как использовать модуль `json` в Python?",
+        "answer": "Для использования модуля `json` в Python, вы должны импортировать его в свой файл с помощью команды `import json`. Вот пример:\n\n```python\nimport json\n```\n\nПосле импорта модуля `json`, вы можете использовать его функции для сериализации и десериализации данных JSON."
+    },
+    {
+        "question": "Что такое сериализация и десериализация JSON?",
+        "answer": "Сериализация JSON - это процесс преобразования данных в формат JSON для их сохранения или передачи по сети. Десериализация JSON - это обратный процесс, при котором данные, сохраненные или переданные в формате JSON, преобразуются обратно в исходный формат данных. В Python модуль `json` предоставляет функции `dump()` и `dumps()` для сериализации, а также функции `load()` и `loads()` для десериализации."
+    },
+    {
+        "question": "Как использовать функцию `json.dump()` для записи данных в файл?",
+        "answer": "Для записи данных в файл с использованием функции `json.dump()`, вы должны передать данные и файлоподобный объект, поддерживающий метод `.write()`. Вот пример:\n\n```python\nimport json\n\ndata = {'name': 'John', 'age': 30}\n\nwith open('data.json', 'w') as file:\n    json.dump(data, file)\n```\n\nВ этом примере мы создаем словарь `data` и затем используем `json.dump()` для записи сериализованных данных в файл с именем `data.json`."
+    },
+    {
+        "question": "Как использовать функцию `json.dumps()` для сериализации данных в строку?",
+        "answer": "Для сериализации данных в строку с использованием функции `json.dumps()`, вы должны передать данные в качестве аргумента. Вот пример:\n\n```python\nimport json\n\ndata = {'name': 'John', 'age': 30}\n\njson_string = json.dumps(data)\n```\n\nВ этом примере мы используем `json.dumps()` для сериализации словаря `data` в строку `json_string`."
+    },
+    {
+        "question": "Какой аргумент можно использовать для изменения отступов при сериализации JSON?",
+        "answer": "Для изменения отступов при сериализации JSON вы можете использовать аргумент `indent`. Вот пример:\n\n```python\nimport json\n\ndata = {'name': 'John', 'age': 30}\n\njson_string = json.dumps(data, indent=4)\n```\n\nВ этом примере мы используем `indent=4` для задания отступа в 4 пробела при сериализации словаря `data` в строку `json_string`."
+    },
+    {
+        "question": "Какой аргумент можно использовать для изменения разделителей при сериализации JSON?",
+        "answer": "Для изменения разделителей при сериализации JSON вы можете использовать аргумент `separators`. По умолчанию он установлен как `(",
+        ", ": ")`. Вот пример:\n\n```python\nimport json\n\ndata = {'name': 'John', 'age': 30}\n\njson_string = json.dumps(data, separators=(',', ':'))\n```\n\nВ этом примере мы используем `separators=(',', ':')` для задания разделителей `,` и `:` при сериализации словаря `data` в строку `json_string`."
+    },
+    {
+        "question": "Как использовать функцию `json.load()` для чтения данных из файла?",
+        "answer": "Для чтения данных из файла с использованием функции `json.load()`, вы должны передать файлоподобный объект, поддерживающий метод `.read()`. Вот пример:\n\n```python\nimport json\n\nwith open('data.json', 'r') as file:\n    data = json.load(file)\n```\n\nВ этом примере мы открываем файл `data.json` и используем `json.load()` для чтения данных из файла и десериализации их в переменную `data`."
+    },
+    {
+        "question": "Как использовать функцию `json.loads()` для десериализации данных из строки?",
+        "answer": "Для десериализации данных из строки с использованием функции `json.loads()`, вы должны передать строку в качестве аргумента. Вот пример:\n\n```python\nimport json\n\njson_string = '{\"name\": \"John\", \"age\": 30}'\n\ndata = json.loads(json_string)\n```\n\nВ этом примере мы используем `json.loads()` для десериализации строки `json_string` в словарь `data`."
+    },
+    {
+        "question": "Какой тип данных будет использован при десериализации JSON-объекта в Python?",
+        "answer": "При десериализации JSON-объекта в Python, тип данных будет зависеть от структуры JSON. Вот примеры соответствия типов данных:\n\n- JSON-объект -> словарь (dict)\n- JSON-массив -> список (list)\n- JSON-строка -> строка (str)\n- JSON-число (целое) -> целое число (int)\n- JSON-число (вещественное) -> число с плавающей запятой (float)\n- JSON-значение true -> True\n- JSON-значение false -> False\n- JSON-значение null -> None\n\nВот пример:\n\n```python\nimport json\n\njson_string = '{\"name\": \"John\", \"age\": 30}'\n\ndata = json.loads(json_string)\n\nprint(type(data))  # <class 'dict'>\n```"
+    },
+    {
+        "question": "Какой метод используется для десериализации JSON-данных из файла?",
+        "answer": "Для десериализации JSON-данных из файла в Python используется метод `json.load()`. Вот пример кода:\n\n```python\nimport json\n\nwith open('data_file.json', 'r') as read_file:\n    data = json.load(read_file)\n```"
+    },
+    {
+        "question": "Какой метод используется для десериализации JSON-строки в Python?",
+        "answer": "Для десериализации JSON-строки в Python используется метод `json.loads()`. Вот пример кода:\n\n```python\nimport json\n\njson_string = '{\"name\": \"John\", \"age\": 30}'\n\ndata = json.loads(json_string)\n```"
+    },
+    {
+        "question": "Какие типы данных могут быть возвращены при десериализации JSON-данных?",
+        "answer": "При десериализации JSON-данных в Python, результатом может быть любой из разрешенных типов данных, указанных в таблице преобразования. В большинстве случаев, корневым объектом будет словарь (dict) или список (list). Вот пример:\n\n```python\nimport json\n\njson_string = '{\"name\": \"John\", \"age\": 30}'\n\ndata = json.loads(json_string)\n\nprint(type(data))  # <class 'dict'>\n```"
+    },
+    {
+        "question": "Какой метод используется для сериализации данных в JSON-строку?",
+        "answer": "Для сериализации данных в JSON-строку в Python используется метод `json.dumps()`. Вот пример кода:\n\n```python\nimport json\n\ndata = {'name': 'John', 'age': 30}\n\njson_string = json.dumps(data)\n```"
+    },
+    {
+        "question": "Как изменить отступы при сериализации JSON-строки?",
+        "answer": "Для изменения отступов при сериализации JSON-строки в Python, вы можете использовать аргумент `indent` метода `json.dumps()`. Вот пример кода:\n\n```python\nimport json\n\ndata = {'name': 'John', 'age': 30}\n\njson_string = json.dumps(data, indent=4)\n```"
+    },
+    {
+        "question": "Какой модуль используется для выполнения запросов к JSONPlaceholder API?",
+        "answer": "Для выполнения запросов к JSONPlaceholder API в Python используется модуль `requests`. Вот пример импорта модуля:\n\n```python\nimport requests\n```"
+    },
+    {
+        "question": "Как выполнить GET-запрос к эндпоинту /todos JSONPlaceholder API?",
+        "answer": "Для выполнения GET-запроса к эндпоинту /todos JSONPlaceholder API в Python, вы можете использовать метод `requests.get()`. Вот пример кода:\n\n```python\nimport requests\n\nresponse = requests.get('https://jsonplaceholder.typicode.com/todos')\n```"
+    },
+    {
+        "question": "Как десериализовать JSON-данные из ответа API-запроса?",
+        "answer": "Для десериализации JSON-данных из ответа API-запроса в Python, вы можете использовать метод `json.loads()` из модуля `json`. Вот пример кода:\n\n```python\nimport json\n\ntodos = json.loads(response.text)\n```"
+    },
+    {
+        "question": "Как отфильтровать список TODOs и записать результат в JSON-файл?",
+        "answer": "Для фильтрации списка TODOs и записи результата в JSON-файл в Python, вы можете использовать функцию `filter()` и метод `json.dump()`. Вот пример кода:\n\n```python\nimport json\n\n# Определение функции для фильтрации\n\ndef keep(todo):\n    is_complete = todo['completed']\n    has_max_count = str(todo['userId']) in users\n    return is_complete and has_max_count\n\n# Запись отфильтрованных TODOs в файл\n\nwith open('filtered_data_file.json', 'w') as data_file:\n    filtered_todos = list(filter(keep, todos))\n    json.dump(filtered_todos, data_file, indent=2)\n```"
+    },
+    {
+        "question": "Какая ошибка возникает при попытке сериализации объекта Elf с помощью json.dumps()?",
+        "answer": "При попытке сериализации объекта Elf с помощью json.dumps() возникает ошибка TypeError: Object of type 'Elf' is not JSON serializable."
+    },
+    {
+        "question": "Как можно обработать сериализацию сложных объектов, которые не являются сериализуемыми по умолчанию?",
+        "answer": "Для обработки сериализации сложных объектов, которые не являются сериализуемыми по умолчанию, можно использовать функцию кодирования (encoding function) и передать ее в параметр default метода dump(). Вот пример кода:\n\n```python\ndef encode_complex(z):\n    if isinstance(z, complex):\n        return (z.real, z.imag)\n    else:\n        type_name = z.__class__.__name__\n        raise TypeError(f\"Object of type '{type_name}' is not JSON serializable\")\n\njson.dumps(9 + 5j, default=encode_complex)\n```"
+    },
+    {
+        "question": "Как можно представить сложный объект в терминах встроенных типов, чтобы его можно было сериализовать в JSON?",
+        "answer": "Для представления сложного объекта в терминах встроенных типов, чтобы его можно было сериализовать в JSON, можно разбить объект на его основные компоненты. В случае комплексных чисел, достаточно знать их действительную и мнимую части. Вот пример кода:\n\n```python\nz = 3 + 8j\n\ndef encode_complex(z):\n    if isinstance(z, complex):\n        return (z.real, z.imag)\n    else:\n        type_name = z.__class__.__name__\n        raise TypeError(f\"Object of type '{type_name}' is not JSON serializable\")\n\njson.dumps(z, default=encode_complex)\n```"
+    },
+    {
+        "question": "Как можно использовать подкласс JSONEncoder для сериализации сложных объектов?",
+        "answer": "Для сериализации сложных объектов можно использовать подкласс JSONEncoder и переопределить его метод default(). Вот пример кода:\n\n```python\nclass ComplexEncoder(json.JSONEncoder):\n    def default(self, z):\n        if isinstance(z, complex):\n            return (z.real, z.imag)\n        else:\n            return super().default(z)\n\njson.dumps(2 + 5j, cls=ComplexEncoder)\n```"
+    }
+]

@@ -1,0 +1,6 @@
+[
+    {
+        "question": "Как проверить, что переменная num является int?",
+        "answer": "if isinstance(num, int):\nOutput: True/False"
+    }
+]

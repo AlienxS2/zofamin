@@ -12,10 +12,10 @@ class TrainingWindow(QDialog):
         self.current_question_index = 0
         self.questions = questions
 
-        self.question_text = QTextEdit(self.questions[self.current_question_index]["question"])
+        self.question_text = QPlainTextEdit(self.questions[self.current_question_index]["question"])
         self.question_text.setReadOnly(True)
 
-        self.answer_text = QTextEdit(self.questions[self.current_question_index]["answer"])
+        self.answer_text = QPlainTextEdit(self.questions[self.current_question_index]["answer"])
         self.answer_text.setReadOnly(True)
         self.answer_text.hide()
 
